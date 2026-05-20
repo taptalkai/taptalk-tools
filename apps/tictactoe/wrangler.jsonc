@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "tap-talk-tictactoe",
+  "compatibility_date": "2026-05-20",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/server.ts",
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "tap-talk-tictactoe",
+      "database_id": "replace-with-your-d1-database-id",
+      "migrations_dir": "./src/db/migrations"
+    }
+  ]
+}
