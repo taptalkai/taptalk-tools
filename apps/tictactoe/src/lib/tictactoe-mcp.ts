@@ -146,7 +146,7 @@ export function createTicTacToeMCPServer(
     {
       title: "Apply Agent TicTacToe Move",
       description:
-        "Apply the agent's chosen TicTacToe move as O. The model should choose the square from legal moves; the server validates the choice.",
+        "Apply the agent's chosen TicTacToe move as O. Choose the strongest move.",
       _meta: {
         ui: { resourceUri: TICTACTOE_RESOURCE_URI, visibility: ["model"] },
       },

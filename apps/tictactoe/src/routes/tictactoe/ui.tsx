@@ -74,12 +74,13 @@ function TicTacToeUI() {
       });
       const nextGame = applyToolResult(result as ToolResult, setGame);
       if (nextGame) {
-        // Keep the latest board in the model's passive context. Unlike
-        // sendMessage below, this does not start a new model turn.
-        await app.updateModelContext({
+        // Keep the latest board in the model's passive context. This is useful
+        // background state, but it should never block the active message below
+        // that asks the agent to make O's move.
+        app.updateModelContext({
           structuredContent: { game: nextGame },
           content: [{ type: "text", text: modelContextText(nextGame) }],
-        });
+        }).catch((error) => console.warn(error instanceof Error ? error.message : String(error)));
       }
       if (nextGame?.status === "playing" && nextGame.current_player === "O") {
         // After the user moves, ask the host to start a model turn so the
@@ -88,7 +89,7 @@ function TicTacToeUI() {
           role: "user",
           content: [{
             type: "text",
-            text: `User played X at ${squareName(square)}. Board ${boardText(nextGame)}. Call agent_move with game_id "${nextGame.game_id}" and one legal square.`,
+            text: `User played X at ${squareName(square)}. ${stateSummary(nextGame)} Call agent_move with game_id "${nextGame.game_id}" and the strongest move.`,
           }],
         });
       } else if (nextGame?.status === "won" || nextGame?.status === "draw") {
@@ -152,6 +153,13 @@ function modelContextText(game: TicTacToeGame) {
     return gameOverText(game);
   }
   return `TicTacToe board ${boardText(game)}. ${game.current_player} to move.`;
+}
+
+function stateSummary(game: TicTacToeGame) {
+  if (game.status !== "playing") {
+    return gameOverText(game);
+  }
+  return `Board ${boardText(game)}. ${game.current_player} to move. Legal moves: ${game.legal_moves.join(", ")}.`;
 }
 
 function gameOverText(game: TicTacToeGame) {
